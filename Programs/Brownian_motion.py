@@ -24,17 +24,39 @@ class Particle:
     def __init__(self, x, y, is_tracer=False):
         self.x = x
         self.y = y
-        self.radius
-        self.color
-        self.speed
-        self.angle
-        self.is_tracer
-        self.path
+        self.radius = PARTICLE_RADIUS
+        self.color = RED
+        self.speed = random.uniform(0, MAX_SPEED)
+        self.angle = random.uniform(0, 2*math.pi)
+        self.is_tracer = is_tracer
+        self.path = []
 
     def move(self):
+        self.x += self.speed * math.cos(self.angle)
+        self.y += self.speed * math.sin(self.angle)
         return
     
-    def check_collision(self, other_particle):
+    def collisions(self, particles):
+        self.collision_box()
+        for particle in particles:
+            if particle != self:
+                self.particle_collision(particle)
+    
+    def collision_box(self):
+        if self.x <= 0 or self.x >= WIDTH:
+            if self.angle < math.pi:
+                self.angle = math.pi - self.angle
+            else:
+                self.angle = 3*math.pi - self.angle
+
+        if self.y <= 0 or self.y >= HEIGHT:
+            self.angle = 2*math.pi - self.angle
+
+
+    def particle_collision(self, other_particle):
+        if math.sqrt((self.x - particle.x)**2 + (self.y - particle.y)**2) < 2*PARTICLE_RADIUS:
+            
+            return
         return
 
 
@@ -59,6 +81,9 @@ while True:
     # Move particles and check collisions
     for particle in particles:
         particle.move()
+
+    for particle in particles:
+        particle.collisions(particles)
 
     # Draw particles and paths
     screen.fill(WHITE)
