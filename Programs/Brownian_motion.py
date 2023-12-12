@@ -9,9 +9,9 @@ pygame.init()
 
 # Constants
 WIDTH, HEIGHT = 800, 600
-FPS = 60
+FPS = 180
 PARTICLE_RADIUS = 10
-NUM_PARTICLES = 50
+NUM_PARTICLES = 100
 MAX_SPEED = 2
 
 # Colors
@@ -29,42 +29,46 @@ class Particle:
         self.speed = random.uniform(0, MAX_SPEED)
         self.angle = random.uniform(0, 2*math.pi)
         self.is_tracer = is_tracer
-        self.path = []
+        self.path = [(x, y)]
 
     def move(self):
         self.x += self.speed * math.cos(self.angle)
         self.y += self.speed * math.sin(self.angle)
-        return
-    
-    def collisions(self, particles):
-        self.collision_box()
-        for particle in particles:
-            if particle != self:
-                self.particle_collision(particle)
+        self.path.append((self.x, self.y))
     
     def collision_box(self):
-        if self.x <= 0 or self.x >= WIDTH:
+        if self.x - PARTICLE_RADIUS <= 0 or self.x + PARTICLE_RADIUS >= WIDTH:
             if self.angle < math.pi:
                 self.angle = math.pi - self.angle
             else:
                 self.angle = 3*math.pi - self.angle
 
-        if self.y <= 0 or self.y >= HEIGHT:
+        if self.y - PARTICLE_RADIUS <= 0 or self.y + PARTICLE_RADIUS >= HEIGHT:
             self.angle = 2*math.pi - self.angle
 
 
     def particle_collision(self, other_particle):
-        if math.sqrt((self.x - particle.x)**2 + (self.y - particle.y)**2) < 2*PARTICLE_RADIUS:
-            
-            return
-        return
+        if math.sqrt((self.x - other_particle.x)**2 + (self.y - other_particle.y)**2) < 2*PARTICLE_RADIUS:
+            self.speed, other_particle.speed = other_particle.speed, self.speed
+            self.angle, other_particle.angle = other_particle.angle, self.angle
 
+
+def new_part():
+    return Particle(random.uniform(PARTICLE_RADIUS, WIDTH - PARTICLE_RADIUS), random.uniform(PARTICLE_RADIUS, HEIGHT - PARTICLE_RADIUS))
 
 # Create particles
 particles = []
 
 # Choose one particle as a tracer
 tracer_index = random.randint(0, NUM_PARTICLES - 1)
+
+for i in range(NUM_PARTICLES):
+    particles.append(new_part())
+
+    if i == tracer_index:
+        particles[i].is_tracer = True
+        particles[i].color = BLUE
+
 
 # Set up Pygame screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -82,8 +86,12 @@ while True:
     for particle in particles:
         particle.move()
 
-    for particle in particles:
-        particle.collisions(particles)
+    for i in range(len(particles)):
+        particles[i].collision_box()
+
+        for j in range(i+1, len(particles)):
+            particles[i].particle_collision(particles[j])
+
 
     # Draw particles and paths
     screen.fill(WHITE)
