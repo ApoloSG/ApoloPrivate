@@ -8,16 +8,18 @@ import math
 pygame.init()
 
 # Constants
-WIDTH, HEIGHT = 800, 600
-FPS = 180
+WIDTH, HEIGHT = 1550, 870
+FPS = 100
 PARTICLE_RADIUS = 10
 NUM_PARTICLES = 100
 MAX_SPEED = 2
+
 
 # Colors
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
 
 # Particle class
 class Particle:
@@ -59,6 +61,10 @@ def new_part():
 # Create particles
 particles = []
 
+#Associate a color with speed
+def speed_color(speed):
+    return 255 -    (speed/MAX_SPEED) * 255
+
 # Choose one particle as a tracer
 tracer_index = random.randint(0, NUM_PARTICLES - 1)
 
@@ -67,7 +73,7 @@ for i in range(NUM_PARTICLES):
 
     if i == tracer_index:
         particles[i].is_tracer = True
-        particles[i].color = BLUE
+        particles[i].color = WHITE
 
 
 # Set up Pygame screen
@@ -93,8 +99,14 @@ while True:
             particles[i].particle_collision(particles[j])
 
 
+    #Update particle color
+    for particle in particles:
+        if not particle.is_tracer:
+            particle.color = [particle.color[0], speed_color(particle.speed), particle.color[2]]
+
+
     # Draw particles and paths
-    screen.fill(WHITE)
+    screen.fill(BLACK)
     for particle in particles:
         pygame.draw.circle(screen, particle.color, (int(particle.x), int(particle.y)), particle.radius)
 
