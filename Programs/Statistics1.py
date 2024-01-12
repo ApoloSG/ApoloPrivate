@@ -1,15 +1,5 @@
 
-
-
-
-
-
-
-
-
-
-
-
+import matplotlib.pyplot as plt
 
 
 def read_txt_file(file_path):
@@ -28,3 +18,28 @@ def convert_to_string(data):
 
 
 teste = read_txt_file("seq1.txt")
+teste = convert_to_string(teste)
+
+teste = [int(x) for x in teste]
+size = len(teste)
+int_list = []
+i = 0
+
+while (i + 6) <=  size:
+    new_int = 0
+    for j in range(0, 6):
+        new_int += teste[i + j] * 2**(5-j)
+    
+    int_list.append(new_int)
+    i += 6
+
+
+def plot_histogram(int_list):
+    plt.hist(int_list, bins=max(int_list)-min(int_list)+1, align="left", edgecolor="black") #(esta linha pertence `a de cima)
+    plt.xlabel("Integers")
+    plt.ylabel("Frequency")
+    plt.title("Histogram of Integers")
+    plt.grid(True)
+    plt.show()
+
+plot_histogram(int_list)    
