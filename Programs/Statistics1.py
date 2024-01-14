@@ -1,3 +1,6 @@
+#Os dados estão enviesados a cada 6 bits pois transformando os bits em inteiros esperávamos uma distribuição normal
+#Mas a existem intervalos de números em que não houve sequer um único inteiro atribúido
+#Logo os dados estão enviesados
 
 import matplotlib.pyplot as plt
 
